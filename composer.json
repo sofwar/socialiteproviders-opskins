@@ -1,6 +1,6 @@
 {
     "name": "sofwar/socialiteproviders-opskins",
-    "description": "Opskins OAuth2 Provider for Laravel Socialite",
+    "description": "Opskins OAuth2 Provider for Laravel Socialite.",
     "license": "MIT",
     "authors": [{
         "name": "sofwar",
