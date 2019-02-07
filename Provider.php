@@ -1,6 +1,6 @@
 <?php
 
-namespace SofWar\SocialiteProvidersOpskins;
+namespace SocialiteProviders\Opskins;
 
 use Laravel\Socialite\Two\InvalidStateException;
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
