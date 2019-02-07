@@ -1,6 +1,6 @@
 <?php
 
-namespace SofWar\SocialiteProvidersOpskins;
+namespace SocialiteProviders\Opskins;
 
 use SocialiteProviders\Manager\SocialiteWasCalled;
 
