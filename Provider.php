@@ -44,9 +44,7 @@ class Provider extends AbstractProvider
         $postKey = (version_compare(ClientInterface::VERSION, '6') === 1) ? 'form_params' : 'body';
 
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
-            'headers' => [
-                'auth' => [$this->clientId, $this->clientSecret],
-            ],
+            'auth' => [$this->clientId, $this->clientSecret],
             $postKey => $this->getTokenFields($code),
         ]);
 
