@@ -1,6 +1,6 @@
 {
-    "name": "socialiteproviders/test",
-    "description": "Test OAuth2 Provider for Laravel Socialite.",
+    "name": "sofwar/socialiteproviders-opskins",
+    "description": "Opskins OAuth2 Provider for Laravel Socialite.",
     "license": "MIT",
     "authors": [{
         "name": "sofwar",
@@ -12,7 +12,7 @@
     },
     "autoload": {
         "psr-4": {
-              "SocialiteProviders\\Test\\": ""
+              "SofWar\\SocialProvidersOpskins\\": ""
         }
     }
 }

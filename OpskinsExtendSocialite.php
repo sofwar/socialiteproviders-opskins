@@ -1,16 +1,16 @@
 <?php
 
-namespace SocialiteProviders\Test;
+namespace SocialiteProviders\Opskins;
 
 use SocialiteProviders\Manager\SocialiteWasCalled;
 
-class TestExtendSocialite
+class OpskinsExtendSocialite
 {
     /**
      * Execute the provider.
      */
     public function handle(SocialiteWasCalled $socialiteWasCalled)
     {
-        $socialiteWasCalled->extendSocialite('test', __NAMESPACE__ . '\Provider');
+        $socialiteWasCalled->extendSocialite('opskins', __NAMESPACE__ . '\Provider');
     }
 }

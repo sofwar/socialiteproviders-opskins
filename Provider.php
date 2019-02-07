@@ -1,6 +1,6 @@
 <?php
 
-namespace SocialiteProviders\Test;
+namespace SocialiteProviders\Opskins;
 
 use Laravel\Socialite\Two\InvalidStateException;
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
@@ -11,7 +11,7 @@ class Provider extends AbstractProvider
     /**
      * Unique Provider Identifier.
      */
-    const IDENTIFIER = 'TEST';
+    const IDENTIFIER = 'OPSKINS';
 
     /**
      * {@inheritdoc}
@@ -39,54 +39,43 @@ class Provider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    protected function getUserByToken($token)
+    public function getAccessTokenResponse($code)
     {
-        $from_token = [];
+        $postKey = (version_compare(ClientInterface::VERSION, '6') === 1) ? 'form_params' : 'body';
 
-        if (is_array($token)) {
-            $from_token["email"] = $token["email"];
-            $token = $token["access_token"];
-        }
-
-        $params = http_build_query([
-            'access_token' => $token,
-            'fields' => implode(',', $this->fields),
-            'language' => $this->getConfig('lang', 'en'),
-            'v' => self::VERSION,
+        $response = $this->getHttpClient()->post($this->getTokenUrl(), [
+            'headers' => [
+                'auth' => [$this->clientId, $this->clientSecret],
+            ],
+            $postKey => $this->getTokenFields($code),
         ]);
 
-        $response = $this->getHttpClient()->get('https://api.vk.com/method/users.get?' . $params);
-        $contents = $response->getBody()->getContents();
-
-        $response = json_decode($contents, true);
-
-        if (!is_array($response) || !isset($response['response'][0])) {
-            throw new \RuntimeException(sprintf(
-                'Invalid JSON response from VK: %s',
-                $contents
-            ));
-        }
-
-        return array_merge($from_token, $response['response'][0]);
+        return json_decode($response->getBody()->getContents(), true);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function user()
+    protected function getUserByToken($token)
     {
-        if ($this->hasInvalidState()) {
-            throw new InvalidStateException;
+        $response = $this->getHttpClient()->get('http://api.opskins.com/IUser/GetProfile/v1/', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $token,
+            ],
+        ]);
+
+        $contents = $response->getBody()->getContents();
+
+        $response = json_decode($contents, true);
+
+        if (!is_array($response) || !isset($response['response'])) {
+            throw new \RuntimeException(sprintf(
+                'Invalid JSON response from OPSKINS: %s',
+                $contents
+            ));
         }
 
-        $response = $this->getAccessTokenResponse($this->getCode());
-        $user = $this->mapUserToObject($this->getUserByToken($response));
-        $this->credentialsResponseBody = $response;
-        if ($user instanceof User) {
-            $user->setAccessTokenResponseBody($this->credentialsResponseBody);
-        }
-        return $user->setToken($this->parseAccessToken($response))
-            ->setExpiresIn($this->parseExpiresIn($response));
+        return $response['response'];
     }
 
     /**
@@ -95,11 +84,11 @@ class Provider extends AbstractProvider
     protected function mapUserToObject(array $user)
     {
         return (new User())->setRaw($user)->map([
-            'id' => Arr::get($user, 'id'),
-            'nickname' => Arr::get($user, 'screen_name'),
-            'name' => trim(Arr::get($user, 'first_name') . ' ' . Arr::get($user, 'last_name')),
-            'email' => Arr::get($user, 'email'),
-            'avatar' => Arr::get($user, 'photo'),
+            'id' => $user['id'],
+            'nickname' => $user['username'],
+            'name' => isset($user['name']['first']) ? ($user['name']['first'] . ' ' . $user['name']['last']) : null,
+            'email' => isset($user['email']['contact_email']) ? $user['email']['contact_email'] : null,
+            'avatar' => $user['avatar'],
         ]);
     }
 
@@ -109,21 +98,8 @@ class Provider extends AbstractProvider
     protected function getTokenFields($code)
     {
         return array_merge(parent::getTokenFields($code), [
-            'grant_type' => 'authorization_code',
+            'grant_type' => 'authorization_code'
         ]);
-    }
-
-    /**
-     * Set the user fields to request from Vkontakte.
-     *
-     * @param array $fields
-     *
-     * @return $this
-     */
-    public function fields(array $fields)
-    {
-        $this->fields = $fields;
-        return $this;
     }
 
     /**
@@ -131,6 +107,6 @@ class Provider extends AbstractProvider
      */
     public static function additionalConfigKeys()
     {
-        return ['lang'];
+        return ['duration', 'mobile'];
     }
 }
