@@ -1,6 +1,6 @@
 <?php
 
-namespace SocialiteProviders\Opskins;
+namespace SocialiteProviders\Test;
 
 use Laravel\Socialite\Two\InvalidStateException;
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
@@ -11,7 +11,7 @@ class Provider extends AbstractProvider
     /**
      * Unique Provider Identifier.
      */
-    const IDENTIFIER = 'OPSKINS';
+    const IDENTIFIER = 'TEST';
 
     /**
      * {@inheritdoc}
