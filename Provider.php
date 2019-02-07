@@ -2,7 +2,7 @@
 
 namespace SocialiteProviders\Opskins;
 
-use Laravel\Socialite\Two\InvalidStateException;
+use GuzzleHttp\ClientInterface;
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
 use SocialiteProviders\Manager\OAuth2\User;
 
